@@ -1,7 +1,7 @@
-import React, { Component  } from "react";
-import { Text, StyleSheet, View, FlatList, Animated, StatusBar, Image, Dimensions, Modal } from "react-native";
+import React, { Component, useEffect  } from "react";
+import { Text, StyleSheet, View, FlatList, Animated, StatusBar, Image, Dimensions, Modal, TextInput } from "react-native";
 import { useState } from "react";
-import { MaterialIcons } from 'react-native-vector-icons'
+//import { MaterialIcons } from 'react-native-vector-icons'
 import { Button } from 'react-native-elements';
 //import  BuyForm  from '../components/locationtype';
 import { Picker } from '@react-native-picker/picker';
@@ -9,14 +9,23 @@ import axios from 'axios'
 import MapView,  { Marker } from 'react-native-maps';
 
 export default function CostPredictor({navigation}) {
+  const locations={
+    Islamabad:[33.6938118,73.0651511],
+    Rawalpindi:[33.5914237,73.0535122],
+    Karachi:[24.860735,67.001137],
+    Lahore:[31.520370,74.358749],
+    Faisalabad:[31.450365,73.134964],
+    Peshawar:[34.0123846,71.5787458]
+  }
   
   const [location , setLocation ] = useState('1')
+  const [loc,setloc]=useState('Islamabad')
   const [type , setType] = useState('House');
   const [bathroom , setBathrroom] = useState('1');
   const [bedroom , setBedroom] = useState('2');
   const [area , setArea] = useState('2');
-  const [latitude , setLatitude] = useState(33.5651);
-  const [longitude , setLongitude] = useState(73.0169);
+  const [latitude , setLatitude] = useState(33.6938118);
+  const [longitude , setLongitude] = useState(73.0651511);
   const [price , setPrice] = useState(0);
 
   const [modalOpen , setModalOpen ] = useState(true);
@@ -35,12 +44,14 @@ export default function CostPredictor({navigation}) {
   setBedroom(value);
   }
 
-  Save4 = (value) => {
-  setArea(value);
-  }
+  // Save4 = (value) => {
+  // setArea(value);
+  // }
 
   Save5 = (value) => {
   setLocation(value);
+  
+
   }
 
   Save6 = (value) => {
@@ -90,10 +101,10 @@ export default function CostPredictor({navigation}) {
     const body={inputt:[Number(typee),Number(locationn),Number(rooms),Number(bathrooms),Number(areaa),latitude,longitude]}
    
 
-    const res=await axios.post("http://192.168.43.211:3000/predict",body,config)
+    const res=await axios.post("http://192.168.18.121:3000/predict",body,config)
     console.log(res.data);
     if(res.data.success){
-      alert("Price"+res.data.price)
+     // alert("Price"+res.data.price)
       setPrice(res.data.price)
       
       
@@ -101,6 +112,48 @@ export default function CostPredictor({navigation}) {
     
 
   }
+
+
+  useEffect(()=>{
+    console.log("yes",location)
+    if(location=="2"){
+      
+      setLatitude(locations.Rawalpindi[0])
+      setLongitude(locations.Rawalpindi[1])
+     
+    }
+
+    if(location=="1"){
+      setLatitude(locations.Islamabad[0])
+      setLongitude(locations.Islamabad[1])
+
+      
+    }
+    if(loc=="Peshawar"){
+      setLatitude(locations.Peshawar[0])
+      setLongitude(locations.Peshawar[1])
+
+      
+    }
+
+    if(location=="4"){
+      setLatitude(locations.Karachi[0])
+      setLongitude(locations.Karachi[1])
+     
+    }
+    if(location=="3"){
+      setLatitude(locations.Lahore[0])
+      setLongitude(locations.Lahore[1])
+      
+    }
+    if(loc=="Faisalabad"){
+      setLatitude(locations.Faisalabad[0])
+      setLongitude(locations.Faisalabad[1])
+    
+    }
+
+    
+  },[location])
 
 
 
@@ -125,13 +178,13 @@ export default function CostPredictor({navigation}) {
           
              </View>
 
-        <View>
+        <View style = {{ paddingHorizontal: 20 }}>
              
              
   <Picker
 
    selectedValue= { type }
-   //style={styles.picker}
+   style={styles.picker}
    onValueChange={Save.bind() } //props.handleChange('location')
    //value = {props.values.location}
    itemStyle={styles.itemStyle}
@@ -141,9 +194,12 @@ export default function CostPredictor({navigation}) {
     
   </Picker>
 
+
+  <Text style = {styles.text}> Number of Rooms: </Text> 
+
   <Picker
    selectedValue= { bedroom }
-  // style={styles.picker}
+  style={styles.picker}
    onValueChange={ Save3.bind() } //props.handleChange('location')
    //value = {props.values.location}
    itemStyle={styles.itemStyle}
@@ -155,10 +211,10 @@ export default function CostPredictor({navigation}) {
     <Picker.Item label="5" value="5" />
   </Picker>
 
-
+  <Text style = {styles.text}> Number of Bathrooms: </Text> 
   <Picker
    selectedValue= { bathroom }
-  // style={styles.picker}
+  style={styles.picker}
    onValueChange={ Save2.bind() } //props.handleChange('location')
    //value = {props.values.location}
    itemStyle={styles.itemStyle}
@@ -172,26 +228,21 @@ export default function CostPredictor({navigation}) {
 
  
 
+  <Text style = {styles.text}> Area (in Marlas): </Text> 
 
-<Picker
-   selectedValue= { area }
-  // style={styles.picker}
-   onValueChange={ Save4.bind() } //props.handleChange('location')
-   //value = {props.values.location}
-   itemStyle={styles.itemStyle}
->
-    <Picker.Item label="1" value="1" />
-    <Picker.Item label="2" value="2" />
-    <Picker.Item label="3" value="3" />
-    <Picker.Item label="4" value="4" />
-    <Picker.Item label="5" value="5" />
-  </Picker>
+  <TextInput
+               style = {styles.textinput}
+                placeholder = '5,10 etc.'
+                onChangeText = {(val) => setArea(val)}
+   />
+
+
 
   
-
+  <Text style = {styles.text}> City: </Text> 
 <Picker
    selectedValue= { location }
-  // style={styles.picker}
+  style={styles.picker}
    onValueChange={ Save5.bind() } //props.handleChange('location')
    //value = {props.values.location}
    itemStyle={styles.itemStyle}
@@ -227,9 +278,9 @@ export default function CostPredictor({navigation}) {
          <View style={styles.locationContainer}>
               
          <MapView style={styles.map}
-                        initialRegion = {{
-                            latitude: 33.5651,
-                            longitude: 73.0169 , 
+                        region = {{
+                            latitude: latitude,
+                            longitude: longitude , 
                             latitudeDelta: 0.0922,
                             longitudeDelta: 0.0421,
                         }}
@@ -238,7 +289,7 @@ export default function CostPredictor({navigation}) {
 
                          <MapView.Marker
                            coordinate = {{
-                               latitude: Number(latitude) , longitude: Number(longitude) 
+                               latitude: latitude , longitude: longitude 
                            }}
                            pinColor = '#28A745'
                             
@@ -257,12 +308,16 @@ export default function CostPredictor({navigation}) {
 
          </View>
 
+         <View>
+           <Text  style = {{ fontSize: 35, fontWeight: 'bold', color: '#28A745' }}>PKR. {price}</Text>
+         </View>
+
          <View style= {styles.modalToggle}>
                   <Button
                    
                    title="Try Again"
                    type="clear"
-                   onPress= {() =>  setModalOpen(true) }
+                   onPress= {() =>  {setModalOpen(true) ; setPrice(0)}}
                    />
                 </View>
 
@@ -317,7 +372,7 @@ const styles = StyleSheet.create({
   },
 
   modalToggle: {
-    marginTop: 25,
+    marginTop: 10,
     marginBottom: 10,
     borderWidth: 1,
     borderColor: '#28A745',
@@ -343,4 +398,40 @@ const styles = StyleSheet.create({
     map: {
         ...StyleSheet.absoluteFillObject,
     },
+    picker : {
+
+      // borderWidth:0,
+      // borderColor:'#777',
+      // padding:10,
+      // margin:10,
+      // width:150,
+      // color: '#28A745',
+      // backgroundColor: '#D3D3D3',
+      // borderBottomColor: '#28A745',
+  
+      alignSelf: 'stretch',
+      height: 40,
+      marginBottom: 30,
+      color: '#28A745',
+      borderBottomColor: '#28A745',
+      borderBottomWidth: 1,
+      borderColor:'#28A745',
+      width:150,
+      backgroundColor: '#D3D3D3',
+  
+    },
+    text : {
+      // fontWeight: 'bold',
+       fontStyle: 'italic',
+       fontSize: 13,
+       color: '#505050',
+       paddingTop: 30
+     },
+     textinput : {
+      alignSelf: 'stretch',
+      height: 40,
+      marginBottom: 40,
+      color: '#28A745',
+      borderBottomColor: '#28A745',
+      borderBottomWidth: 1}
 });

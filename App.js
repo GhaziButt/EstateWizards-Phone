@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React  from 'react';
-import { StyleSheet, Text, View, Button} from 'react-native';
+import { StyleSheet, Text, View, Button, Image, TouchableOpacity} from 'react-native';
 
 // import { Ionicons } from '@expo/vector-icons';
 
@@ -25,12 +25,19 @@ import SignInScreen from './screens/SignInScreen';
 import SignUpScreen from './screens/SignUpScreen';
 import BuyFullScreen from './screens/BuyFullScreen';
 import ResCostPredictor from './screens/ResCostPredict';
+import NewProjects from './screens/NewProjects';
+import NewProjectsFullscreen from './screens/NewProjectFullscreen'
+import AddNewProject from './screens/AddNewProject'
+import ChatScreen from './screens/ChatScreen'
+import FindHostFullScreen from './screens/FindHostFullScreen'
+import SecondChat from './screens/SecondChat'
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+//import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+//import Icon from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 
@@ -38,6 +45,7 @@ import allreducers from './reducers'
 import {createStore} from 'redux'
 import {Provider , useSelector } from 'react-redux'
 import { useEffect, useState } from 'react';
+//import { TouchableOpacity } from 'react-native';
 
 
 
@@ -64,12 +72,66 @@ const ProfileStack = createStackNavigator();
 const RootStack = createStackNavigator();
 const BuyStack = createStackNavigator();
 const CostPredictStack = createStackNavigator();
+const NewProjectStack = createStackNavigator();
+const FindHostStack = createStackNavigator();
 
 
 
 
 
 //STACK SCREENS
+
+
+const FindHostScreen = ({navigation}) => (
+
+  <FindHostStack.Navigator
+  headerMode='none'
+  screenOptions= {{
+   headerStyle: {
+     backgroundColor : 'white',
+   },
+
+
+
+   headerBackTitleStyle: {
+     fontWeight: 'bold',
+     fontStyle: 'italic'
+   }
+ }}
+  >
+
+      <FindHostStack.Screen name="Find Host" component={FindHost}/>
+      <FindHostStack.Screen name="Find HostFS" component={FindHostFullScreen}/>
+
+
+  </FindHostStack.Navigator>
+
+);
+
+const NewProjectsStackScreen = ({navigation}) => (
+
+  <NewProjectStack.Navigator
+  headerMode='none'
+  screenOptions= {{
+   headerStyle: {
+     backgroundColor : 'white',
+   },
+   headerBackTitleStyle: {
+     fontWeight: 'bold',
+     fontStyle: 'italic'
+   }
+ }}
+  >
+
+      <BuyStack.Screen name="NewProjects" component={NewProjects}/>
+      <BuyStack.Screen name="NewProjectsFS" component={NewProjectsFullscreen}/>
+
+
+  </NewProjectStack.Navigator>
+
+);
+
+
 
 const BuyStackScreen = ({navigation}) => (
 
@@ -88,6 +150,7 @@ const BuyStackScreen = ({navigation}) => (
 
       <BuyStack.Screen name="Buy" component={Buy}/>
       <BuyStack.Screen name="BuyFullScreen" component={BuyFullScreen}/>
+      <BuyStack.Screen name="BuyChat" component={SecondChat}/>
 
 
   </BuyStack.Navigator>
@@ -173,13 +236,14 @@ const HomeStackScreen = ({ navigation }) =>(
         options = {{
           headerLeft: () => (
             <View style = {{marginLeft : 13 }}>
-            <Icon.Button
-             name = "ios-menu"
-             size = {30}
-             color = '#28A745'
-             backgroundColor = 'white'
-             onPress = {() => navigation.openDrawer() }
-            />
+              <TouchableOpacity onPress = {() => navigation.openDrawer()}>
+             <Image
+        style={styles.tinyLogo}
+        source={require('./assets/ham.jpg')}
+      />  
+             </TouchableOpacity>
+
+          
             </View>
           ),
         }}
@@ -250,8 +314,12 @@ const SavedStackScreen = () =>(
 const InboxStackScreen = () =>(
   <InboxStack.Navigator>
     <InboxStack.Screen  
-        name = "Chats"
+        name = "Inbox"
         component = {Inbox}  
+    />
+    <InboxStack.Screen  
+        name = "Chats"
+        component = {ChatScreen}  
     />
   </InboxStack.Navigator>
 );
@@ -273,7 +341,22 @@ const TabScreen = () => (
   <Tab.Navigator
       initialRouteName="Home"
       activeColor="white"
-      style={{ backgroundColor: 'tomato' }}
+      barStyle={{ backgroundColor: '#ffff' }}
+      //style={{ backgroundColor: 'white' }}
+      tabBarOptions = {{
+        showLabel: false,
+        style: {
+          position: 'absolute',
+          bottom: 25,
+          left: 20,
+          right: 20,
+          elevation: 0,
+          backgroundColor: '#28A745',
+          borderRadius: 15,
+          height: 90,
+          ...styles.shadow
+        }
+      }}
     >
       <Tab.Screen
         name="Home"
@@ -281,19 +364,25 @@ const TabScreen = () => (
         options={{
           tabBarColor: '#28A745',
           tabBarLabel: 'Home',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="home" color={color} size={26} />
+           tabBarIcon: () => (
+             <Image
+         //style={styles.tinyLogo}
+         source={require('./assets/house3.jpg')}
+       />  
           ),
         }}
       />
       <Tab.Screen
-        name="Saved"
+        name="Activity"
         component={SavedStackScreen}
         options={{
           tabBarColor: '#28A745',
-          tabBarLabel: 'Saved Posts',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="chevron-double-down" color={color} size={26} />
+          tabBarLabel: 'Activity',
+          tabBarIcon: () => (
+            <Image
+            //style={styles.tinyLogo}
+            source={require('./assets/bell.jpg')}
+          />  
           ),
         }}
       />
@@ -303,22 +392,25 @@ const TabScreen = () => (
         options={{
           tabBarColor: '#28A745',
           tabBarLabel: 'Inbox',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="chat-processing" color={color} size={26} />
+          tabBarIcon: () => (
+            <Image
+         //style={styles.tinyLogo}
+         source={require('./assets/chat.png')}
+       />  
           ),
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Account"
         component={ProfileStackScreen}
         options={{
           tabBarColor: '#28A745',
           tabBarLabel: 'Profile',
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="alien" color={color} size={26} />
+            <Icon name="ios-person" size={30} color="#4F8EF7" />
           ),
         }}
-      />
+      /> */}
     </Tab.Navigator>
  
 );
@@ -346,12 +438,14 @@ const TabScreen = () => (
          <Drawer.Screen name = "Home" component ={TabScreen} />
          <Drawer.Screen name = "Buy" component ={BuyStackScreen} />
          <Drawer.Screen name = "Create A Post" component ={CreateAPostScreen} />
-         <Drawer.Screen name = "Host Your Home" component ={HostYourHome} />
-         <Drawer.Screen name = "Hostings near You" component ={FindHost} />
-         <Drawer.Screen name = "Investment Price Trends" component ={PriceTrends} />
+         {/* <Drawer.Screen name = "Host Your Home" component ={HostYourHome} /> */}
+         <Drawer.Screen name = "Hostings near You" component ={FindHostScreen} />
+         {/* <Drawer.Screen name = "Investment Price Trends" component ={PriceTrends} /> */}
          <Drawer.Screen name = "House Cost Predictor" component ={CostPredictStackScreen} />
          <Drawer.Screen name = "Find your Place!" component ={FindYourPlace} />
-         <Drawer.Screen name = "About 'The Wizards'" component ={AboutUS} />
+         <Drawer.Screen name = "New Projects" component ={NewProjectsStackScreen} />
+         {/* <Drawer.Screen name = "Add New Projects" component ={AddNewProject} />
+         <Drawer.Screen name = "About 'The Wizards'" component ={AboutUS} /> */}
        </Drawer.Navigator>
 
      ) :
@@ -372,4 +466,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
+  shadow: {
+    shadowColor: "#7F5DF0",
+    shadowOffset: {
+      width: 0,
+      height: 10
+    },
+    shadowOpacity:0.25,
+    shadowRadius: 3.5,
+    elevation: 5
+  }
 });

@@ -6,6 +6,7 @@ import { MaterialIcons } from 'react-native-vector-icons'
 import { Button } from 'react-native-elements';
 //import  BuyForm  from '../components/locationtype';
 import { Picker } from '@react-native-picker/picker';
+import Axios from 'axios';
 
 const { width, height } = Dimensions.get('window');
 
@@ -20,20 +21,24 @@ const BACKDROP_HEIGHT = height * 0.65;
 
 export default function Buy({navigation}) {
    
- const [location , setLocation] = useState('karachi');
- const [type , setType] = useState('house');
+ const [location , setLocation] = useState('Islamabad');
+ const [type , setType] = useState('sell');
+ const [propertytype , setPropertyType] = useState('House');
  const [modalOpen , setModalOpen ] = useState(false);
 
- 
- Save = (value) => {
-  setLocation(value);
-}
+ const [posts,setPosts]=useState([]);
+//  Save = (value) => {
+//   setLocation(value);
+// }
 
-Save2 = (value) => {
-setType(value);
-}
+// Save2 = (value) => {
+// setType(value);
+// }
 
-mainOnpress = () => {
+mainOnpress = async() => {
+  const res = await Axios.get(`http://192.168.18.121:3000/post/displayads/${location}/${propertytype}/${ type }`)
+ // console.log(res.data.posts)
+  setPosts(res.data.posts)
   setModalOpen(false);
 }
 
@@ -63,34 +68,80 @@ mainOnpress = () => {
     <View>
                      
                      
-          <Picker
+           <Text style = {styles.text}> What are you looking for? </Text>
+               <Picker
+                 style = {styles.picker}
+                 selectedValue={type}
+                 onValueChange={(itemValue, itemIndex) =>
+                    setType(itemValue)
+               }>
+                  
+                  <Picker.Item label="Sell" value="sell" />
+                  <Picker.Item label="Rent" value="rent" />
+                  
+                  
+                </Picker>
 
-           selectedValue= { location }
-           //style={styles.picker}
-           onValueChange={Save.bind() } //props.handleChange('location')
-           //value = {props.values.location}
-           itemStyle={styles.itemStyle}
-        >
-            <Picker.Item label="Location" value="0" />
-            <Picker.Item label="Islamabad" value="islamabad" />
-            <Picker.Item label="Rawalpindi" value="rawalpindi" />
-            <Picker.Item label="Lahore" value="lahore" />
-            <Picker.Item label="Karachi" value="karachi" />
-          </Picker>
 
-          <Picker
-           selectedValue= { type }
-          // style={styles.picker}
-           onValueChange={ Save2.bind() } //props.handleChange('location')
-           //value = {props.values.location}
-           itemStyle={styles.itemStyle}
-        >
-            <Picker.Item label="Type" value="0" />
-            <Picker.Item label="House" value="house" />
-            <Picker.Item label="Flat" value="flat" />
-            <Picker.Item label="Plot" value="plot" />
-            <Picker.Item label="Commercial" value="commercial" />
-          </Picker>
+
+                <Text style = {styles.text}> Type: </Text>
+               
+               
+               {type=="sell"?
+                <Picker
+                  style = {styles.picker}
+                  selectedValue={propertytype}
+                  onValueChange={(itemValue, itemIndex) =>
+                      setPropertyType(itemValue)
+                }>
+                    
+                    <Picker.Item label="House" value="House" />
+                    <Picker.Item label="Residencial Plot" value="" />
+                    <Picker.Item label="Commercial Plot" value="Commercial Plot" />
+                    <Picker.Item label="Flat/Apartment" value="Flat/Apartment" />
+                    <Picker.Item label="Office" value="Office" />
+                    <Picker.Item label="Shop" value="Shop" />
+
+                  </Picker>
+                  :
+                  <Picker
+                  style = {styles.picker}
+                  selectedValue={propertytype}
+                  onValueChange={(itemValue, itemIndex) =>
+                      setPropertyType(itemValue)
+                }>
+                    
+                    <Picker.Item label="House" value="House" />
+                    <Picker.Item label="Flat/Apartment" value="Flat/Apartment" />
+                    <Picker.Item label="Office" value="Office" />
+                    <Picker.Item label="Shop" value="Shop" />
+                  </Picker>}
+
+
+
+                  
+                  <Text style = {styles.text}> Location: </Text>
+               <Picker
+                 style = {styles.picker}
+                 selectedValue={location}
+                 onValueChange={(itemValue, itemIndex) =>
+                    setLocation(itemValue)
+               }>
+                  
+                  <Picker.Item label="Islamabad" value="Islamabad" />
+                  <Picker.Item label="Rawalpindi" value="Rawalpindi" />
+                  <Picker.Item label="Karachi" value="Karachi" />
+                  <Picker.Item label="Lahore" value="Lahore" />
+                  <Picker.Item label="Faisalabad" value="Faisalabad" />
+                  <Picker.Item label="Peshawar" value="Peshawar" />
+                </Picker>
+
+
+         
+
+
+
+
 
           <Button
             title="Enter"
@@ -118,9 +169,7 @@ mainOnpress = () => {
 
                 <FlatList
                    showsHorizontalScrollIndicator = {false}
-                   data =  {  buypost.filter(function(arr){
-                     return arr.location.toLowerCase()==location && arr.type.toLowerCase()==type
-                   }) }
+                   data =  {  posts }
                    keyExtractor = {(item) => item.key}
                    horizontal
                    contentContainerStyle = {{ alignItems : 'center'  }}
@@ -135,14 +184,17 @@ mainOnpress = () => {
                              
                         Title : item.title,
                         Location : item.location,
-                        WRoom : item.washroom,
-                        BRoom : item.bedroom,
+                        WRoom : item.bathrooms,
+                        BRoom : item.rooms,
                         Price : item.price,
                         Descrip : item.description,
                         Type : item.type,
-                        IImage : item.image,
-                        Lat : item.point[0],
-                        Lon : item.point[1]
+                        IImage : item.pictures[0],
+                        latlong : item.latlong,
+                        postid : item._id,
+                        PostTitle : item.title,
+                        user:item.user,
+                        bidss:item.bids
 
                  }
                       
@@ -151,7 +203,7 @@ mainOnpress = () => {
                       
                        <View style = {{ width : ITEM_SIZE}}>
 
-                         
+                         {console.log(item.latlong)}
                        
                          <View
                            style = {{
@@ -164,7 +216,7 @@ mainOnpress = () => {
                          >
 
                            <Image
-                             source = {{ uri: item.image}}
+                             source = {{uri : item.pictures[0]}}
                              style = {styles.posterImage}
                            />
 
@@ -290,6 +342,19 @@ const styles = StyleSheet.create({
 
   modalContent: {
     flex: 1
-  }
+  },
+
+  picker : {
+
+    borderWidth:0,
+    borderColor:'#777',
+    padding:10,
+    margin:10,
+    width:150,
+    color: '#28A745',
+    backgroundColor: '#D3D3D3',
+    alignContent: 'center'
+
+  },
 
 });

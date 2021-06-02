@@ -40,7 +40,7 @@ export default function SignInScreen ({navigation}) {
     console.log(body);
     
   
-    const res=await axios.post("http://192.168.43.211:3000/user/signin",body,config)
+    const res=await axios.post("http://192.168.18.121:3000/user/signin",body,config)
     
     
     if(res.data.success){
@@ -79,7 +79,7 @@ export default function SignInScreen ({navigation}) {
         <Text style = {({ fontSize : 15 , alignContent : 'flex-start'})}> Email </Text>
         <TextInput
          style = {styles.input}
-         placeholder = 'e.g Kashan House'
+         placeholder = 'estate@wizard.com'
          onChangeText = {(val) => setEmail(val)}
          
         />
@@ -87,7 +87,8 @@ export default function SignInScreen ({navigation}) {
         <Text style = {({ fontSize : 15})}> Password </Text>
         <TextInput
           style = {styles.input}
-         placeholder = 'e.g Kashan House'
+        // placeholder = 'e.g Kashan House'
+         secureTextEntry = {true}
          onChangeText = {(val) => setPassword(val)}
          
         />
@@ -105,7 +106,7 @@ export default function SignInScreen ({navigation}) {
 
         </View>
 
-        <View  style = {{paddingTop : 100 }} >
+        {/* <View  style = {{paddingTop : 100 }} >
 
         <Button
         type = 'clear'
@@ -114,7 +115,7 @@ export default function SignInScreen ({navigation}) {
         onPress= {() => { navigation.navigate('SignUpScreen')}}
         />
 
-        </View>
+        </View> */}
 
 
         </View>

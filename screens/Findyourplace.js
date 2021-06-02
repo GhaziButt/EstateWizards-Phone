@@ -1,33 +1,97 @@
-import React, { Component, useState } from "react";
+import React, { Component, useState,useEffect } from "react";
 import { Text, StyleSheet, View,  Modal, StatusBar, Animated, Dimensions  } from "react-native";
 import { Button } from 'react-native-elements';
 import { Picker } from '@react-native-picker/picker';
 import MapView,  { Marker } from 'react-native-maps';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-
+import Axios from "axios"
 
 export default function FindYourPlace (){
+  const locations={
+    Islamabad:[33.6938118,73.0651511],
+    Rawalpindi:[33.5914237,73.0535122],
+    Karachi:[24.860735,67.001137],
+    Lahore:[31.520370,74.358749],
+    Faisalabad:[31.450365,73.134964],
+    Peshawar:[34.0123846,71.5787458]
+  }
 
   const [modalOpen , setModalOpen ] = useState(false);
-  const [location , setLocation] = useState('karachi');
-  const [type , setType] = useState('house');
+  const [location , setLocation] = useState('Islamabad');
+  const [type , setType] = useState('sell');
+  const [propertytype , setPropertyType] = useState('House');
+  const [latitude , setLatitude] = useState(33.5651);
+  const [longitude , setLongitude] = useState(73.0169);
 
+  const [posts,setPosts]=useState([]);
+//  Save = (value) => {
+//   setLocation(value);
+// }
 
-  Save = (value) => {
-  setLocation(value);
-  console.log(value);
-  }
+// Save2 = (value) => {
+// setType(value);
+// }
 
-  Save2 = (value) => {
-  setType(value);
-  console.log(value);
-  }
-
-   mainOnpress = () => {
+mainOnpres = async() => {
+  console.log("pko")
+  const res = await Axios.get(`http://192.168.18.121:3000/post/viewmap/${propertytype}/${ type }`)
+ // console.log(res.data.posts)
+  setPosts(res.data.posts)
+  
   setModalOpen(false);
+}
 
-  } 
+
+  
+
+  useEffect(()=>{
+    if(location=="Rawalpindi"){
+      
+      setLatitude(locations.Rawalpindi[0])
+      setLongitude(locations.Rawalpindi[1])
+     
+    }
+
+    if(location=="Islamabad"){
+      setLatitude(locations.Islamabad[0])
+      setLongitude(locations.Islamabad[1])
+
+      
+    }
+    if(location=="Peshawar"){
+      setLatitude(locations.Peshawar[0])
+      setLongitude(locations.Peshawar[1])
+
+      
+    }
+
+    if(location=="Karachi"){
+      setLatitude(locations.Karachi[0])
+      setLongitude(locations.Karachi[1])
+     
+    }
+    if(location=="Lahore"){
+      setLatitude(locations.Lahore[0])
+      setLongitude(locations.Lahore[1])
+      
+    }
+    if(location=="Faisalabad"){
+      setLatitude(locations.Faisalabad[0])
+      setLongitude(locations.Faisalabad[1])
+    
+    }
+
+    console.log(latitude,longitude)
+
+    
+  },[location])
+
+   onRegionChange =(region)=> {
+    setLatitude(region.latitude)
+    setLongitude(region.longitude)
+
+  }
     
        return(
               <View style = {styles.container} >
@@ -48,43 +112,90 @@ export default function FindYourPlace (){
                      <View>
                      
                      
-          <Picker
-
-           selectedValue= { location }
-           //style={styles.picker}
-           onValueChange={Save.bind() } //props.handleChange('location')
-           //value = {props.values.location}
-           itemStyle={styles.itemStyle}
-        >
-            <Picker.Item label="Location" value="0" />
-            <Picker.Item label="Islamabad" value="islamabad" />
-            <Picker.Item label="Rawalpindi" value="rawalpindi" />
-            <Picker.Item label="Lahore" value="lahore" />
-            <Picker.Item label="Karachi" value="karachi" />
-          </Picker>
-
-          <Picker
-             selectedValue= { type }
-          // style={styles.picker}
-             onValueChange={ Save2.bind() } //props.handleChange('location')
-           //value = {props.values.location}
-           itemStyle={styles.itemStyle}
-        >
-            <Picker.Item label="Type" value="0" />
-            <Picker.Item label="House" value="house" />
-            <Picker.Item label="Flat" value="flat" />
-            <Picker.Item label="Plot" value="plot" />
-            <Picker.Item label="Commercial" value="commercial" />
-          </Picker>
-
-          <Button
-            title="Enter"
-            type='clear'
-            onPress = {() => mainOnpress()}//props.handleSubmit 
-        />
-         
-                       
-         </View>
+                     <Text style = {styles.text}> What are you looking for? </Text>
+                         <Picker
+                           style = {styles.picker}
+                           selectedValue={type}
+                           onValueChange={(itemValue, itemIndex) =>
+                              setType(itemValue)
+                         }>
+                            
+                            <Picker.Item label="Sell" value="sell" />
+                            <Picker.Item label="Rent" value="rent" />
+                            
+                            
+                          </Picker>
+          
+          
+          
+                          <Text style = {styles.text}> Type: </Text>
+                         
+                         
+                         {type=="sell"?
+                          <Picker
+                            style = {styles.picker}
+                            selectedValue={propertytype}
+                            onValueChange={(itemValue, itemIndex) =>
+                                setPropertyType(itemValue)
+                          }>
+                              
+                              <Picker.Item label="House" value="House" />
+                              <Picker.Item label="Residencial Plot" value="" />
+                              <Picker.Item label="Commercial Plot" value="Commercial Plot" />
+                              <Picker.Item label="Flat/Apartment" value="Flat/Apartment" />
+                              <Picker.Item label="Office" value="Office" />
+                              <Picker.Item label="Shop" value="Shop" />
+          
+                            </Picker>
+                            :
+                            <Picker
+                            style = {styles.picker}
+                            selectedValue={propertytype}
+                            onValueChange={(itemValue, itemIndex) =>
+                                setPropertyType(itemValue)
+                          }>
+                              
+                              <Picker.Item label="House" value="House" />
+                              <Picker.Item label="Flat/Apartment" value="Flat/Apartment" />
+                              <Picker.Item label="Office" value="Office" />
+                              <Picker.Item label="Shop" value="Shop" />
+                            </Picker>}
+          
+          
+          
+                            
+                            <Text style = {styles.text}> Location: </Text>
+                         <Picker
+                           style = {styles.picker}
+                           selectedValue={location}
+                           onValueChange={(itemValue, itemIndex) =>
+                              setLocation(itemValue)
+                         }>
+                            
+                            <Picker.Item label="Islamabad" value="Islamabad" />
+                            <Picker.Item label="Rawalpindi" value="Rawalpindi" />
+                            <Picker.Item label="Karachi" value="Karachi" />
+                            <Picker.Item label="Lahore" value="Lahore" />
+                            <Picker.Item label="Faisalabad" value="Faisalabad" />
+                            <Picker.Item label="Peshawar" value="Peshawar" />
+                          </Picker>
+          
+          
+                   
+          
+          
+          
+          
+          
+                    <Button
+                      title="Enter"
+                      type='clear'
+                      onPress = {() => mainOnpres()} //props.handleSubmit 
+                  />
+                   
+                                 
+            </View>
+          
 
       </Modal>
 
@@ -92,26 +203,26 @@ export default function FindYourPlace (){
 
       <Animated.View style={styles.container} >
                      <MapView style={styles.map}
-                        initialRegion = {{
-                            latitude: 30.3753,
-                            longitude: 69.3451, 
+                        region = {{
+                            latitude: latitude,
+                            longitude: longitude, 
                             latitudeDelta: 0.0922,
                             longitudeDelta: 0.0421,
+                            
                         }}
                         
                      >
                        {
 
-                         buypost.filter(function(arr){
-                   return arr.location.toLowerCase()==location && arr.type.toLowerCase()==type}).map(marker => (
+                         posts.map(ad => (
 
                           <MapView.Marker
-                           key = { marker.key }
-                           description = { marker.description }
-                           title = { marker.title }
+                           key = { ad._id }
+                           description = { ad.description }
+                           title = { ad.title }
                           
                            coordinate = {{
-                               latitude:  Number( marker.point[0] ) , longitude: Number(marker.point[1]) 
+                               latitude:  Number( ad.latlong[0] ) , longitude: Number(ad.latlong[1]) 
                            }}
                             //image= {require('../components/insh.png')}
                             pinColor = '#28A745'
@@ -236,15 +347,15 @@ const styles = StyleSheet.create({
     flex: 1
   },
   container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-      },
-      map: {
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height,
-      },
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  map: {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
+  },
       button:{
         borderWidth:0,
         borderColor:'#777',
@@ -253,5 +364,27 @@ const styles = StyleSheet.create({
         width:350,
         height:150,
         backgroundColor: '#D3D3D3'
-      }
+      },
+      picker : {
+
+        // borderWidth:0,
+        // borderColor:'#777',
+        // padding:10,
+        // margin:10,
+        // width:150,
+        // color: '#28A745',
+        // backgroundColor: '#D3D3D3',
+        // borderBottomColor: '#28A745',
+    
+        alignSelf: 'stretch',
+        height: 40,
+        marginBottom: 30,
+        color: '#28A745',
+        borderBottomColor: '#28A745',
+        borderBottomWidth: 1,
+        borderColor:'#28A745',
+        width:150,
+        backgroundColor: '#D3D3D3',
+    
+      },
 });

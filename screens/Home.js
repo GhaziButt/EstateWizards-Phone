@@ -1,9 +1,12 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import { Text, StyleSheet, View, Button, ScreenContainer, Image, TouchableOpacity, FlatList } from "react-native";
 
 import Swiper from 'react-native-swiper';
 
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Ionicons } from '@expo/vector-icons';
+//import { Feather } from '@expo/vector-icons'; 
+
+//import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 
@@ -11,12 +14,25 @@ import ItemCard from '../components/Itemcard';
 import  Buy  from './Buy';
 
 
+//const [isFontLoaded , setIsFontLoaded] = useState(false);
+
+
+// useEffect(() => {
+//   (async () => {
+//           await Font.loadAsync({ 'Ionicons': require('@expo/vector-icons/fonts/Ionicons.js') })
+//          setIsFontLoaded(true);
+//   })();
+// }, []);
+
+
 
 export const Home = ({navigation }) => (
+
+  
     
 
              
-   <View>
+   <View style= {{ backgroundColor: 'white' }} >
                   {/* <Text>Home </Text>
                   
      <Button title="Enter Location" onPress = {() => navigation.push("Recommended Ads at given Location") }/>
@@ -38,26 +54,36 @@ export const Home = ({navigation }) => (
     <View style={styles.categoryContainer} >
       <TouchableOpacity style= {styles.categoryButton} onPress = {() => {navigation.navigate('Buy')}}>
       <View style={styles.categoryIcon}>
-         <Ionicons name= "ios-home" size ={50} color = '#28A745'/>
+      <Image
+        style={styles.tinyLogo}
+        source={require('../assets/house1.png')}
+      />  
+         {/* <Ionicons name= "ios-home" size ={50} color = '#28A745'/> */}
          <Text style = {styles.categoryBtnTxt}>Buy</Text>
       </View>
       </TouchableOpacity>
-      <TouchableOpacity style= {styles.categoryButton} onPress = {() => {}}>
+      <TouchableOpacity style= {styles.categoryButton} onPress = {() => {navigation.navigate('Buy')}}>
       <View style={styles.categoryIcon}>
-         <Ionicons name= "ios-rocket" size ={50} color = '#28A745'/>
+      <Image
+        style={styles.tinyLogo}
+        source={require('../assets/dollar.png')}
+      /> 
          <Text style = {styles.categoryBtnTxt}>Rent</Text>
       </View>
       </TouchableOpacity>
-      <TouchableOpacity style= {styles.categoryButton} onPress = {() => {}}>
+      <TouchableOpacity style= {styles.categoryButton} onPress = {() => {navigation.navigate('Hostings near You')}}>
       <View style={styles.categoryIcon}>
-         <Ionicons name= "ios-heart-half" size ={50} color = '#28A745'/>
+      <Image
+        style={styles.tinyLogo}
+        source={require('../assets/heart.png')}
+      /> 
          <Text style = {styles.categoryBtnTxt}>One Nighter</Text>
       </View>
       </TouchableOpacity>
     </View>
     
     <View style ={styles.cardsWrapper} >
-       <Text>Near you</Text>
+       <Text style = {{ fontWeight: 'bold' , fontSize: 30 , color: '#36454F' }}>Near you</Text>
        
          <View >
            {/* <View style= {styles.cardImgWrapper}> 
@@ -122,7 +148,7 @@ const styles = StyleSheet.create({
   flex : 1,
   width: '30%',
   marginHorizontal : 0,
-  alignSelf : 'center'
+  alignSelf : 'center',
 
  },
 
@@ -216,6 +242,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 5,
     color: '#28A745',
+    fontWeight: 'bold'   ,
   },
 
   list_styles: {
